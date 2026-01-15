@@ -17,14 +17,22 @@ jobs:
           unzip -q android-ndk-r23b-linux.zip
           export ANDROID_NDK_HOME=$PWD/android-ndk-r23b
 
-      - name: Make module zip
+      - name: Make module zip (exclude NDK and GitHub files)
         run: |
-          chmod 755 *.sh
-          chmod -R 755 META-INF
-          zip -r9 Magisk_OverlayFS.zip . -x "*.git*" -x "*.md" -x "*.github*"
+          chmod 755 *.sh || true
+          chmod -R 755 META-INF || true
+          zip -r9 Magisk_OverlayFS.zip \
+            META-INF \
+            *.sh \
+            *.prop \
+            libs \
+            mode.sh \
+            util_functions.sh \
+            -x "*.git*" -x "*.github*" -x "*.md*" -x "android-ndk-r23b*" -x "*__MACOSX*"
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: Magisk_OverlayFS
           path: Magisk_OverlayFS.zip
+
